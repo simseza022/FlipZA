@@ -20,14 +20,44 @@ FlipZA/
 ```
 
 ### 🛠 Tech Stack
-Framework: .NET 9.0 C#
+* Framework: .NET 9.0 C#
 
-Background Worker: .NET Worker Service (BackgroundService) + Quartz.NET
+* Background Worker: .NET Worker Service (BackgroundService) + Quartz.NET
 
-Web Scraping & API Parsing: HttpClient + System.Text.Json (Takealot JSON endpoints) & Microsoft.Playwright (Headless Chromium)
+* Web Scraping & API Parsing: HttpClient + System.Text.Json (Takealot JSON endpoints) & Microsoft.Playwright (Headless Chromium)
 
-Database & Persistence: Entity Framework Core 9 + SQLite
+* Database & Persistence: Entity Framework Core 9 + SQLite
 
-Architecture Pattern: Clean Architecture (Domain-Driven Core)
+* Architecture Pattern: Clean Architecture (Domain-Driven Core)
 
-Deployment: Docker & Docker Compose on Ubuntu Linux VPS
+* Deployment: Docker & Docker Compose on Ubuntu Linux VPS
+
+### 🚀 Getting Started 
+
+1. Clone the Repository
+```
+git clone git@github.com:YOUR_USERNAME/FlipZA.git
+cd FlipZA
+```
+2. Restore Dependencies & Build
+
+```
+dotnet restore
+dotnet build FlipZA.sln
+```
+3. Install Playwright Browsers (For Infrastructure)
+
+```
+pwsh src/FlipZA.Infrastructure/bin/Debug/net9.0/playwright.ps1 install chromium
+```
+4. Database Setup & Migrations
+
+```
+# Apply migrations to local SQLite database
+dotnet ef database update --project src/FlipZA.Infrastructure --startup-project src/FlipZA.Engine
+```
+5. Run the Engine Locally
+
+```
+dotnet run --project src/FlipZA.Engine
+```
