@@ -1,13 +1,13 @@
-namespace FlipZA.Engine;
+namespace FlipZA.Engine.Jobs;
 
-public class Worker : BackgroundService
+public class TakealotScaperJob : BackgroundService
 {
-    private readonly ILogger<Worker> _logger;
+    private readonly ILogger<TakealotScaperJob> _logger;
     private readonly IServiceProvider _serviceProvider;
     private readonly IConfiguration _configuration;
 
-    public Worker(
-        ILogger<Worker> logger, 
+    public TakealotScaperJob(
+        ILogger<TakealotScaperJob> logger, 
         IServiceProvider serviceProvider,
         IConfiguration configuration)
     {
