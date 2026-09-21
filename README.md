@@ -4,7 +4,7 @@
 
 ---
 
-## 🏗 System Architecture
+### 🏗 System Architecture
 
 FlipZA is built following **Clean Architecture** principles to keep core business rules decoupled from external dependencies and infrastructure.
 
@@ -17,3 +17,17 @@ FlipZA/
  │    └── FlipZA.Api/             # REST API & Webhook endpoints for user dashboards
  └── tests/
       └── FlipZA.Tests/           # Unit & Integration tests
+```
+
+### 🛠 Tech Stack
+Framework: .NET 9.0 C#
+
+Background Worker: .NET Worker Service (BackgroundService) + Quartz.NET
+
+Web Scraping & API Parsing: HttpClient + System.Text.Json (Takealot JSON endpoints) & Microsoft.Playwright (Headless Chromium)
+
+Database & Persistence: Entity Framework Core 9 + SQLite
+
+Architecture Pattern: Clean Architecture (Domain-Driven Core)
+
+Deployment: Docker & Docker Compose on Ubuntu Linux VPS
