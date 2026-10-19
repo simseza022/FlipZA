@@ -6,14 +6,14 @@ The scraper is split into two scheduled jobs:
 
 | Job | Runs | Purpose | Requests per run |
 |---|---|---|---|
-| **Discovery** (`TakealotDiscoveryJob`) | Every 12 h, starting at startup | Decide *which* products to track | ~40 searches + details for newly tracked products |
+| **Discovery** (`TakealotDiscoveryJob`) | Every 12 h, starting at startup | Decide *which* products to track | ~56 searches + details for newly tracked products |
 | **Refresh** (`TakealotRefreshJob`) | Every 12 h, starting 30 min after startup | Record *current* price, stock and competition for every tracked product | 1 per tracked product (≤150) |
 
 ```text
 time after startup:  0:00 discovery   0:30 refresh   12:00 discovery   12:30 refresh   ...
 ```
 
-Both jobs are marked `[DisallowConcurrentExecution]`, so a job never overlaps itself, and the 30-minute offset keeps them from running at the same time. Total load is about **400 requests per day**.
+Both jobs are marked `[DisallowConcurrentExecution]`, so a job never overlaps itself, and the 30-minute offset keeps them from running at the same time. Total load is about **450 requests per day**.
 
 ---
 
@@ -49,30 +49,53 @@ Takealot does not publish sales figures, so FlipZA uses **review count as a prox
 Each configured search (e.g. `"power bank"` in department 16) is run for up to `MaxPagesPerSearch` pages (default 2, so up to 72 products). Search results already include **price, review count, star rating and in-stock status**, so filtering costs no extra requests.
 
 ### Step 2: filter
+Every search belongs to a **sourcing channel**, which decides how strict the filter is:
+
+| Channel | Meant for | Searches (default) |
+|---|---|---|
+| **Import** | Generic or private-label stock bought overseas (e.g. Alibaba) | 18: cables, phone holders and stands, laptop stands, watch straps, screen protectors, phone cases, USB hubs and adapters, HDMI cables, card readers, mouse pads, wired earphones, phone tripods, action-camera accessories, laptop sleeves, cable organisers |
+| **Local** | Stock bought from South African wholesalers, any brand | 10: power banks, phone chargers, Bluetooth earphones and earbuds, Bluetooth speakers, smart watches, wireless mice, flash drives, memory cards, gaming headsets |
+
 A search result becomes a **candidate** only if all of these hold:
 
-| Rule | Default |
-|---|---|
-| Price between `MinPrice` and `MaxPrice` (inclusive) | R200 – R3,000 |
-| Review count ≥ `MinReviewCount` | 20 |
-| In stock (if `RequireInStock`) | required |
+| Rule | Applies to | Default |
+|---|---|---|
+| Price between `MinPrice` and `MaxPrice` (inclusive) | all | R200 – R3,000 |
+| Review count ≥ `MinReviewCount` | all | 20 |
+| In stock (if `RequireInStock`) | all | required |
+| **Not an established brand** | Import | Brand is empty, a generic name ("Generic", "Unbranded", ...) or a small private label not in `ExcludedBrands` |
+| **Simple to import** | Import | Title has none of the `ExcludedTitleKeywords` |
 
 The price ceiling is also how FlipZA stays with **light** items: Takealot rarely lists product weight, so there is no weight filter.
+
+#### Why the import filters exist
+
+- **Brands.** Most generic listings on Takealot have no brand at all. Established brands (Belkin, Anker, Volkano, SanDisk, ...) bought from overseas marketplaces risk being counterfeit, and Takealot removes counterfeit listings. Small private labels (often importers' own brand names) are allowed, because that is the model you would follow; set `UnbrandedOnly` to `true` to exclude them too.
+- **Brands are only checked in the brand field, never the title.** Generic accessories often say "for Apple Watch" or "Samsung compatible" in the title.
+- **Costly-to-import keywords.** Titles containing these are skipped:
+  - *bluetooth, wireless, wifi, smart*: radio equipment generally needs **ICASA** type approval;
+  - *battery, rechargeable, mah, power bank, solar*: **lithium batteries** are dangerous goods for air freight;
+  - *wall charger, car charger, charger plug*: mains chargers generally need an **NRCS** Letter of Authority.
+
+  Keywords match whole words, ignoring case: `smart` matches "Smart Plug" but not "Smartphone Holder"; `mah` still matches "10000mAh". "Charger Cable" is **not** excluded, because only the specific charger phrases above are listed.
+- **Limitation:** the keyword check reads only the product title in search results. A product whose title doesn't mention its battery or Bluetooth can still slip through; check its attributes before ordering.
+
+Local searches skip the brand and keyword filters: products bought from SA wholesalers are already compliant and genuine.
 
 The R200 floor sits just above the lowest price at which any deal can work (about R176 with default settings; see [Deal calculator](deal-calculator.md#the-minimum-viable-selling-price)).
 
 ### Step 3: pick the tracked set
 Candidates are ranked by review count within each search. Ranking all searches together would let a few high-review categories (for example Bluetooth headphones with thousands of reviews) take every slot, so the tracked set is chosen in two passes:
 
-1. **Equal share.** Each search gets `max(1, MaxTrackedProducts ÷ number of searches)` slots, filled with its most-reviewed candidates. With 150 slots and 20 searches, that is 7 per search (140 total).
+1. **Equal share.** Each search gets `max(1, MaxTrackedProducts ÷ number of searches)` slots, filled with its most-reviewed candidates. With 150 slots and 28 searches, that is 5 per search (140 total).
 2. **Top-up.** Remaining slots (10 here, plus any a search could not fill) go to the most-reviewed remaining candidates across all searches.
 
-A product found by two searches is counted once. Products listed in `ProductIds` are always tracked, in addition to the 150.
+A product found by two searches is counted once and gets the channel of the first search (in configuration order) that found it. Products listed in `ProductIds` are always tracked, in addition to the 150, with channel `Manual`.
 
 The implementation is `TakealotDiscoveryJob.PickTrackedSet`, covered by tests in `tests/FlipZA.Tests/Engine/TakealotDiscoveryJobTests.cs`.
 
 ### Step 4: update the database
-- Products in the new set are marked `IsTracked = true`.
+- Products in the new set are marked `IsTracked = true`, and their `SourcingChannel` (`Import`, `Local` or `Manual`) is recorded.
 - Products **not** in the set are marked `IsTracked = false`, **but only if every search succeeded**. A failed search would otherwise make its products look like they had dropped out.
 - Products not yet in the database get a full product-details fetch, are priced by the deal calculator and saved. Existing products wait for the next refresh.
 

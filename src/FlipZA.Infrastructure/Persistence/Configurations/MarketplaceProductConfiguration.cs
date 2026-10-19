@@ -15,6 +15,7 @@ public class MarketplaceProductConfiguration : IEntityTypeConfiguration<Marketpl
         builder.HasIndex(p => new { p.Marketplace, p.IsTracked, p.LastSeenAtUtc });
 
         builder.Property(p => p.Marketplace).HasConversion<string>().HasMaxLength(32);
+        builder.Property(p => p.SourcingChannel).HasConversion<string>().HasMaxLength(16);
         builder.Property(p => p.ExternalId).HasMaxLength(64);
         builder.Property(p => p.VariantId).HasMaxLength(64);
         builder.Property(p => p.Title).HasMaxLength(512);

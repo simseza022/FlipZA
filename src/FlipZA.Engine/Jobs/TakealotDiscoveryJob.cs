@@ -43,6 +43,7 @@ public class TakealotDiscoveryJob : IJob
         _logger.LogInformation("Starting Takealot discovery: {Count} searches", discovery.Searches.Count);
 
         var candidatesPerSearch = new List<List<MarketplaceSearchHit>>();
+        var channelById = new Dictionary<string, SourcingChannel>(StringComparer.OrdinalIgnoreCase);
         var hitCount = 0;
         var failedSearches = 0;
         foreach (var search in discovery.Searches)
@@ -52,8 +53,17 @@ public class TakealotDiscoveryJob : IJob
                 var found = await _takealot.SearchAsync(
                     new MarketplaceSearch(search.Query, search.Department), discovery.MaxPagesPerSearch, ct);
                 hitCount += found.Count;
-                candidatesPerSearch.Add(found.Where(IsCandidate).OrderByDescending(h => h.ReviewCount).ToList());
-                _logger.LogInformation("Search '{Query}' returned {Count} products", search.Query, found.Count);
+
+                var candidates = found
+                    .Where(h => IsCandidate(h, search.Channel))
+                    .OrderByDescending(h => h.ReviewCount)
+                    .ToList();
+                candidatesPerSearch.Add(candidates);
+                foreach (var hit in candidates)
+                    channelById.TryAdd(hit.ExternalId, search.Channel);
+
+                _logger.LogInformation("Search '{Query}' ({Channel}) returned {Count} products, {Candidates} candidates",
+                    search.Query, search.Channel, found.Count, candidates.Count);
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
@@ -62,25 +72,28 @@ public class TakealotDiscoveryJob : IJob
             }
         }
 
-        var tracked = _settings.ProductIds
-            .Concat(PickTrackedSet(candidatesPerSearch, discovery.MaxTrackedProducts))
-            .Distinct(StringComparer.OrdinalIgnoreCase)
+        var targets = _settings.ProductIds
+            .Select(id => new TrackingTarget(id, SourcingChannel.Manual))
+            .Concat(PickTrackedSet(candidatesPerSearch, discovery.MaxTrackedProducts)
+                .Select(id => new TrackingTarget(id, channelById[id])))
+            .DistinctBy(t => t.ExternalId, StringComparer.OrdinalIgnoreCase)
             .ToList();
 
         // A partial discovery run would wrongly drop products, so only prune after a clean run.
         var untrackOthers = failedSearches == 0;
-        var newIds = await _repository.SetTrackedAsync(Marketplace.Takealot, tracked, untrackOthers, ct);
+        var newTargets = await _repository.SetTrackedAsync(Marketplace.Takealot, targets, untrackOthers, ct);
 
         int saved = 0, failed = 0;
-        foreach (var plid in newIds)
+        foreach (var target in newTargets)
         {
             try
             {
-                var listing = await _takealot.GetListingAsync(plid, ct);
+                var listing = await _takealot.GetListingAsync(target.ExternalId, ct);
                 if (listing is null)
                     continue;
 
                 listing.Product.IsTracked = true;
+                listing.Product.SourcingChannel = target.Channel;
                 _pricer.Apply(listing);
                 await _repository.SaveAsync(listing, ct);
                 saved++;
@@ -88,22 +101,27 @@ public class TakealotDiscoveryJob : IJob
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
                 failed++;
-                _logger.LogError(ex, "Failed to scrape Takealot product {Plid}", plid);
+                _logger.LogError(ex, "Failed to scrape Takealot product {Plid}", target.ExternalId);
             }
         }
 
         _logger.LogInformation(
-            "Takealot discovery complete: {Hits} search hits, {Tracked} tracked ({New} new, {Saved} saved, {Failed} failed), {FailedSearches} failed searches{Pruned}",
-            hitCount, tracked.Count, newIds.Count, saved, failed, failedSearches,
+            "Takealot discovery complete: {Hits} search hits, {Tracked} tracked ({Import} import, {Local} local, {Manual} manual; {New} new, {Saved} saved, {Failed} failed), {FailedSearches} failed searches{Pruned}",
+            hitCount, targets.Count,
+            targets.Count(t => t.Channel == SourcingChannel.Import),
+            targets.Count(t => t.Channel == SourcingChannel.Local),
+            targets.Count(t => t.Channel == SourcingChannel.Manual),
+            newTargets.Count, saved, failed, failedSearches,
             untrackOthers ? string.Empty : "; skipped pruning untracked products");
     }
 
-    private bool IsCandidate(MarketplaceSearchHit hit)
+    private bool IsCandidate(MarketplaceSearchHit hit, SourcingChannel channel)
     {
         var discovery = _settings.Discovery;
         return hit.Price is { } price && price >= discovery.MinPrice && price <= discovery.MaxPrice
                && hit.ReviewCount >= discovery.MinReviewCount
-               && (hit.IsInStock || !discovery.RequireInStock);
+               && (hit.IsInStock || !discovery.RequireInStock)
+               && (channel != SourcingChannel.Import || SourcingFilter.IsImportFriendly(hit, discovery.Import));
     }
 
     /// <summary>

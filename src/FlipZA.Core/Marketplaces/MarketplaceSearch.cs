@@ -10,6 +10,7 @@ public sealed record MarketplaceSearch(string Query, int? DepartmentId = null);
 public sealed record MarketplaceSearchHit(
     string ExternalId,
     string Title,
+    string? Brand,
     decimal? Price,
     int ReviewCount,
     decimal? StarRating,

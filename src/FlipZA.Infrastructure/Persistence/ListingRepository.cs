@@ -23,6 +23,7 @@ public class ListingRepository(FlipZaDbContext db) : IListingRepository
             scraped.Id = product.Id;
             scraped.FirstSeenAtUtc = product.FirstSeenAtUtc;
             scraped.IsTracked |= product.IsTracked;
+            scraped.SourcingChannel ??= product.SourcingChannel;
             db.Entry(product).CurrentValues.SetValues(scraped);
         }
 
@@ -39,13 +40,13 @@ public class ListingRepository(FlipZaDbContext db) : IListingRepository
             .Take(limit)
             .ToListAsync(cancellationToken);
 
-    public async Task<IReadOnlyList<string>> SetTrackedAsync(
+    public async Task<IReadOnlyList<TrackingTarget>> SetTrackedAsync(
         Marketplace marketplace,
-        IReadOnlyCollection<string> externalIds,
+        IReadOnlyCollection<TrackingTarget> targets,
         bool untrackOthers,
         CancellationToken cancellationToken)
     {
-        var ids = externalIds.ToList();
+        var ids = targets.Select(t => t.ExternalId).ToList();
         var products = db.MarketplaceProducts.Where(p => p.Marketplace == marketplace);
 
         if (untrackOthers)
@@ -55,16 +56,23 @@ public class ListingRepository(FlipZaDbContext db) : IListingRepository
                 .ExecuteUpdateAsync(s => s.SetProperty(p => p.IsTracked, false), cancellationToken);
         }
 
-        await products
-            .Where(p => ids.Contains(p.ExternalId))
-            .ExecuteUpdateAsync(s => s.SetProperty(p => p.IsTracked, true), cancellationToken);
+        foreach (var group in targets.GroupBy(t => t.Channel))
+        {
+            var channel = group.Key;
+            var groupIds = group.Select(t => t.ExternalId).ToList();
+            await products
+                .Where(p => groupIds.Contains(p.ExternalId))
+                .ExecuteUpdateAsync(s => s
+                    .SetProperty(p => p.IsTracked, true)
+                    .SetProperty(p => p.SourcingChannel, channel), cancellationToken);
+        }
 
         var existing = await products
             .Where(p => ids.Contains(p.ExternalId))
             .Select(p => p.ExternalId)
             .ToListAsync(cancellationToken);
 
-        return ids.Except(existing).ToList();
+        return targets.Where(t => !existing.Contains(t.ExternalId)).ToList();
     }
 
     public async Task UntrackAsync(Marketplace marketplace, string externalId, CancellationToken cancellationToken) =>

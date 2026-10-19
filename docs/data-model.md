@@ -44,6 +44,7 @@ The database runs in **WAL mode**, so it can be read while the Engine writes. Se
 | `Dimensions`, `Weight`, `Warranty` | text | As displayed by Takealot; often empty |
 | `Attributes` | text (JSON) | All product attributes |
 | `IsTracked` | bool | `1` = refreshed twice daily. Set by the discovery job. |
+| `SourcingChannel` | text | `Import` (generic, simple to import), `Local` (SA wholesale, any brand) or `Manual`; empty if never tracked |
 | `FirstSeenAtUtc` | text | First scrape |
 | `LastSeenAtUtc` | text | Latest scrape |
 | `LastRawPayload` | text | Latest full Takealot response (~20–50 KB) |
@@ -120,6 +121,32 @@ WHERE p.IsTracked = 1
   AND s.MaxBuyPrice IS NOT NULL
 ORDER BY s.ReviewCount DESC;
 ```
+
+### Import candidates: generic products third-party sellers already win with
+
+A third-party seller holding the buy box on a generic listing is evidence that importing that kind of product works.
+
+```sql
+SELECT p.ExternalId,
+       substr(p.Title, 1, 45) AS Title,
+       COALESCE(p.Brand, '-') AS Brand,
+       s.Price,
+       s.MaxBuyPrice,
+       s.ReviewCount,
+       s.OtherOffersCount,
+       s.BuyBoxSellerName
+FROM MarketplaceProducts p
+JOIN ListingSnapshots s
+  ON s.Id = (SELECT Id FROM ListingSnapshots
+             WHERE ProductId = p.Id
+             ORDER BY CapturedAtUtc DESC LIMIT 1)
+WHERE p.IsTracked = 1
+  AND p.SourcingChannel = 'Import'
+  AND s.IsMarketplaceSeller = 1
+ORDER BY s.ReviewCount DESC;
+```
+
+Change `'Import'` to `'Local'` for products to buy from SA wholesalers.
 
 ### Price history of one product
 

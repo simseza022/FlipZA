@@ -41,6 +41,7 @@ public static partial class TakealotParser
         return new MarketplaceSearchHit(
             ExternalId: $"PLID{id}",
             Title: view.Prop("core", "title").AsString() ?? string.Empty,
+            Brand: view.Prop("core", "brand").AsString(),
             Price: view.Prop("buybox_summary", "prices").Items()
                 .Select(p => ((JsonElement?)p).AsDecimal())
                 .FirstOrDefault(),

@@ -1,8 +1,11 @@
 # FlipZA
 
-FlipZA is a deal-intelligence engine for South African online resellers. It watches fast-moving, light tech gadgets on **Takealot**, records their prices, stock and competition over time, and works out **what each product is worth to a reseller** after Takealot's fees and VAT, including the **most a reseller can pay a supplier** and still make a worthwhile profit.
+FlipZA is a product-research engine for selling on **Takealot**. It watches fast-moving, light tech gadgets and accessories, records their prices, stock and competition over time, and works out **what each product is worth to a seller** after Takealot's fees and VAT, including the **most you can pay a supplier** and still make a worthwhile profit.
 
-The goal is a B2B tool: resellers compare those numbers against supplier and clearance prices to find stock worth buying.
+It tracks two kinds of opportunity:
+
+- **Import:** generic and private-label products that are simple to import (e.g. from Alibaba): no established brands, no Bluetooth/Wi-Fi, batteries or mains chargers;
+- **Local:** branded electronics available from South African wholesalers.
 
 ---
 
@@ -11,7 +14,7 @@ The goal is a B2B tool: resellers compare those numbers against supplier and cle
 | Area | Status |
 |---|---|
 | Takealot scraper (search + product details via Takealot's public JSON API) | Working |
-| Discovery of fast-moving light gadgets (20 searches, filtered and ranked) | Working |
+| Discovery of fast-moving light gadgets (28 searches across Import and Local channels) | Working |
 | Price, stock and competition history (SQLite) | Working |
 | Deal calculator (fees, VAT, landed cost, ROI, max buy price) | Working |
 | robots.txt enforcement, throttling, retries | Working |
@@ -25,7 +28,7 @@ The goal is a B2B tool: resellers compare those numbers against supplier and cle
 
 ```mermaid
 flowchart LR
-    D[Discovery job<br/>every 12 h] -->|20 gadget searches| T[(Takealot API)]
+    D[Discovery job<br/>every 12 h] -->|28 import + local searches| T[(Takealot API)]
     D -->|picks 150 tracked products| DB[(SQLite)]
     R[Refresh job<br/>every 12 h, +30 min] -->|product details per tracked product| T
     R --> P[Deal calculator]
@@ -33,7 +36,7 @@ flowchart LR
     P -->|snapshot + net proceeds + max buy price| DB
 ```
 
-1. **Discovery** searches Takealot for light gadgets (power banks, chargers, earbuds, smart watches, ...), keeps in-stock products priced R200–R3,000 with at least 20 reviews, and picks the 150 most-reviewed as the **tracked set**. Review count is the best public signal of how fast a product sells.
+1. **Discovery** searches Takealot for light gadgets and accessories, keeps in-stock products priced R200–R3,000 with at least 20 reviews, drops established brands and hard-to-import products from the **Import** searches, and picks the 150 most-reviewed as the **tracked set**. Review count is the best public signal of how fast a product sells.
 2. **Refresh** re-reads every tracked product twice a day and stores a **snapshot**: price, stock, buy-box seller, competing offers, reviews.
 3. Every snapshot is run through the **deal calculator**, which stores what a reseller would keep from a sale and the **maximum supplier price** that still clears the deal gate (R80 profit and 25% ROI).
 
@@ -84,4 +87,4 @@ FlipZA/
 
 ## Responsible scraping
 
-FlipZA identifies itself with an honest User-Agent, obeys Takealot's `robots.txt`, spaces requests at least 2.5 seconds apart and makes roughly 400 requests a day. Takealot's Terms of Use have **not yet been reviewed**; do that before relying on this commercially.
+FlipZA identifies itself with an honest User-Agent, obeys Takealot's `robots.txt`, spaces requests at least 2.5 seconds apart and makes roughly 450 requests a day. Takealot's Terms of Use have **not yet been reviewed**; do that before relying on this commercially.

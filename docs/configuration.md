@@ -39,7 +39,7 @@ Most settings are read when the Engine starts, so **restart after changing them*
 | Key | Default | Description |
 |---|---|---|
 | `IntervalHours` | `12` | How often discovery runs (first run at startup) |
-| `Searches` | 20 gadget searches | List of `{ "Query": "...", "Department": id }`. `Department` is optional. |
+| `Searches` | 18 import + 10 local searches | List of `{ "Query": "...", "Department": id, "Channel": "Import" \| "Local" }`. `Department` is optional; `Channel` defaults to `Local`. |
 | `MaxPagesPerSearch` | `2` | Result pages per search (36 products each) |
 | `MinPrice` / `MaxPrice` | `200` / `3000` | Rand price band for candidates |
 | `MinReviewCount` | `20` | Minimum reviews (sales-velocity proxy) |
@@ -47,6 +47,17 @@ Most settings are read when the Engine starts, so **restart after changing them*
 | `MaxTrackedProducts` | `150` | Size of the tracked set (excluding `ProductIds`) |
 
 See [Takealot scraper](scraper.md#discovery-job-choosing-what-to-track) for how these are applied and for department ids.
+
+## `TakealotScraper:Discovery:Import`: filters for Import-channel searches
+
+| Key | Default | Description |
+|---|---|---|
+| `GenericBrandNames` | `Generic`, `Unbranded`, `No Brand`, `Non-Branded`, `OEM`, `No result` | Brand values treated as "no brand" (case-insensitive) |
+| `ExcludedBrands` | 44 established brands (Apple, Samsung, Belkin, Anker, UGreen, Volkano, SanDisk, Edifier, ...) | Skipped because overseas stock of these risks being counterfeit |
+| `UnbrandedOnly` | `false` | `true` also skips small private labels, keeping only products with no brand |
+| `ExcludedTitleKeywords` | `bluetooth`, `wireless`, `wifi`, `wi-fi`, `smart`, `rechargeable`, `battery`, `mah`, `power bank`, `powerbank`, `wall charger`, `car charger`, `charger plug`, `solar` | Whole-word, case-insensitive title matches that signal radio, battery or mains-charger products |
+
+Default lists are defined in `appsettings.json`, not in code: .NET's configuration binder adds configured items to pre-filled lists instead of replacing them. To change a list with environment variables, set each index (`TakealotScraper__Discovery__Import__ExcludedBrands__0`, `__1`, ...), or edit `appsettings.json`.
 
 ## `TakealotScraper:Refresh`: price history
 
@@ -103,7 +114,7 @@ A rough request budget per day:
 discovery: (searches × MaxPagesPerSearch + newly tracked products) × (24 ÷ Discovery.IntervalHours)
 refresh:   MaxProductsPerRun × (24 ÷ Refresh.IntervalHours)
 
-defaults:  (20 × 2 + ~10) × 2  +  150 × 2  ≈  400 requests/day
+defaults:  (28 × 2 + ~10) × 2  +  150 × 2  ≈  450 requests/day
 ```
 
 Each run's duration is roughly `requests × MinRequestIntervalMs`; a 150-product refresh takes about 6–7 minutes.

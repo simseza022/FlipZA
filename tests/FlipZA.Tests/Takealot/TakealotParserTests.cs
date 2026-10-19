@@ -23,6 +23,7 @@ public class TakealotParserTests
         Assert.Equal(1099m, first.Price);
         Assert.Equal(2148, first.ReviewCount);
         Assert.Equal(4.8m, first.StarRating);
+        Assert.Equal("Russell Hobbs", first.Brand);
         Assert.True(first.IsInStock);
     }
 

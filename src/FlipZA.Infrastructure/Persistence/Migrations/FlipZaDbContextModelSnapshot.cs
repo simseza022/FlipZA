@@ -197,6 +197,10 @@ namespace FlipZA.Infrastructure.Persistence.Migrations
                     b.Property<string>("ModelNumber")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("SourcingChannel")
+                        .HasMaxLength(16)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Subtitle")
                         .HasColumnType("TEXT");
 

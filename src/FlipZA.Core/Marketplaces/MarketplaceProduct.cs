@@ -39,6 +39,9 @@ public class MarketplaceProduct
     /// <summary>Tracked products are re-scraped on every refresh run to build price history.</summary>
     public bool IsTracked { get; set; }
 
+    /// <summary>The sourcing channel the product was last chosen for; null if never tracked.</summary>
+    public SourcingChannel? SourcingChannel { get; set; }
+
     public DateTime FirstSeenAtUtc { get; set; }
     public DateTime LastSeenAtUtc { get; set; }
 

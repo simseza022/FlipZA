@@ -6,7 +6,7 @@ public interface IListingRepository
 {
     /// <summary>
     /// Upserts the product and appends the snapshot to its price history.
-    /// An already-tracked product stays tracked.
+    /// An already-tracked product stays tracked and keeps its sourcing channel unless one is given.
     /// </summary>
     Task SaveAsync(ScrapedListing listing, CancellationToken cancellationToken);
 
@@ -14,13 +14,13 @@ public interface IListingRepository
     Task<IReadOnlyList<string>> GetTrackedAsync(Marketplace marketplace, int limit, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Marks the given products as tracked and, if <paramref name="untrackOthers"/> is set, stops
-    /// tracking every other product on the marketplace. Returns the ids not yet in the database,
-    /// which must be scraped and saved before they can be tracked.
+    /// Marks the given products as tracked (recording each one's sourcing channel) and, if
+    /// <paramref name="untrackOthers"/> is set, stops tracking every other product on the marketplace.
+    /// Returns the targets not yet in the database, which must be scraped and saved before they can be tracked.
     /// </summary>
-    Task<IReadOnlyList<string>> SetTrackedAsync(
+    Task<IReadOnlyList<TrackingTarget>> SetTrackedAsync(
         Marketplace marketplace,
-        IReadOnlyCollection<string> externalIds,
+        IReadOnlyCollection<TrackingTarget> targets,
         bool untrackOthers,
         CancellationToken cancellationToken);
 

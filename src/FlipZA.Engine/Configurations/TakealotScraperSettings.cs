@@ -1,3 +1,5 @@
+using FlipZA.Core.Marketplaces;
+
 namespace FlipZA.Engine.Configurations;
 
 public class TakealotScraperSettings
@@ -32,6 +34,9 @@ public class TakealotScraperSettings
 
         /// <summary>Upper bound on tracked products; keep it refreshable within one refresh interval.</summary>
         public int MaxTrackedProducts { get; set; } = 150;
+
+        /// <summary>Extra filters for searches in the <see cref="SourcingChannel.Import"/> channel.</summary>
+        public ImportFilterSettings Import { get; set; } = new();
     }
 
     public class SearchSettings
@@ -40,6 +45,29 @@ public class TakealotScraperSettings
 
         /// <summary>Takealot department id (the search "Type" filter), e.g. 16 = Cellphones &amp; Wearables.</summary>
         public int? Department { get; set; }
+
+        /// <summary>Import: generic, simple-to-import products only. Local: any brand (SA wholesale stock).</summary>
+        public SourcingChannel Channel { get; set; } = SourcingChannel.Local;
+    }
+
+    // Lists are empty here on purpose: the configuration binder appends to (rather than replaces)
+    // pre-filled lists, so the defaults live in appsettings.json.
+    public class ImportFilterSettings
+    {
+        /// <summary>Brand values that mean "no brand", e.g. "Generic", "Unbranded".</summary>
+        public List<string> GenericBrandNames { get; set; } = new();
+
+        /// <summary>Established brands to skip: buying them from overseas suppliers risks counterfeits.</summary>
+        public List<string> ExcludedBrands { get; set; } = new();
+
+        /// <summary>When true, only products with no brand qualify (small private labels are skipped too).</summary>
+        public bool UnbrandedOnly { get; set; }
+
+        /// <summary>
+        /// Title words that signal costly imports: radio (ICASA approval), lithium batteries
+        /// (dangerous goods freight) or mains chargers (NRCS approval).
+        /// </summary>
+        public List<string> ExcludedTitleKeywords { get; set; } = new();
     }
 
     /// <summary>Re-scrapes tracked products to build price and stock history.</summary>

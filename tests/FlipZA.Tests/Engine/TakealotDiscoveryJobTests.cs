@@ -6,7 +6,7 @@ namespace FlipZA.Tests.Engine;
 public class TakealotDiscoveryJobTests
 {
     private static MarketplaceSearchHit Hit(string id, int reviews) =>
-        new(id, id, 299m, reviews, 4.5m, true);
+        new(id, id, null, 299m, reviews, 4.5m, true);
 
     [Fact]
     public void PickTrackedSet_GivesEachSearchAShare_BeforeRankingByReviews()
