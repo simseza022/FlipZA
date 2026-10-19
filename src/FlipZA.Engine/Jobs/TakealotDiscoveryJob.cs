@@ -1,6 +1,7 @@
 using FlipZA.Core.Interfaces;
 using FlipZA.Core.Marketplaces;
 using FlipZA.Engine.Configurations;
+using FlipZA.Engine.Services;
 using FlipZA.Infrastructure.Takealot;
 using Microsoft.Extensions.Options;
 using Quartz;
@@ -17,17 +18,20 @@ public class TakealotDiscoveryJob : IJob
 {
     private readonly TakealotClient _takealot;
     private readonly IListingRepository _repository;
+    private readonly ListingPricer _pricer;
     private readonly TakealotScraperSettings _settings;
     private readonly ILogger<TakealotDiscoveryJob> _logger;
 
     public TakealotDiscoveryJob(
         TakealotClient takealot,
         IListingRepository repository,
+        ListingPricer pricer,
         IOptions<TakealotScraperSettings> settings,
         ILogger<TakealotDiscoveryJob> logger)
     {
         _takealot = takealot;
         _repository = repository;
+        _pricer = pricer;
         _settings = settings.Value;
         _logger = logger;
     }
@@ -77,6 +81,7 @@ public class TakealotDiscoveryJob : IJob
                     continue;
 
                 listing.Product.IsTracked = true;
+                _pricer.Apply(listing);
                 await _repository.SaveAsync(listing, ct);
                 saved++;
             }

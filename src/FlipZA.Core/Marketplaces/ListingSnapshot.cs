@@ -43,5 +43,17 @@ public class ListingSnapshot
     public decimal? LowestOtherOfferPrice { get; set; }
     public string? PromotionName { get; set; }
 
+    /// <summary>
+    /// What a reseller keeps from selling one unit at <see cref="Price"/> after fees and VAT,
+    /// under the reseller profile configured when the snapshot was taken.
+    /// </summary>
+    public decimal? EstimatedNetProceeds { get; set; }
+
+    /// <summary>
+    /// Highest supplier unit cost at which reselling at <see cref="Price"/> still passes the deal
+    /// gate, under the configured profile; null when no positive cost would.
+    /// </summary>
+    public decimal? MaxBuyPrice { get; set; }
+
     public List<CompetingOffer> Offers { get; set; } = new();
 }

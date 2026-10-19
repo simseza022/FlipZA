@@ -89,6 +89,9 @@ namespace FlipZA.Infrastructure.Persistence.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("TEXT");
 
+                    b.Property<double?>("EstimatedNetProceeds")
+                        .HasColumnType("REAL");
+
                     b.Property<bool>("IsInStock")
                         .HasColumnType("INTEGER");
 
@@ -102,6 +105,9 @@ namespace FlipZA.Infrastructure.Persistence.Migrations
                         .HasColumnType("REAL");
 
                     b.Property<double?>("LowestOtherOfferPrice")
+                        .HasColumnType("REAL");
+
+                    b.Property<double?>("MaxBuyPrice")
                         .HasColumnType("REAL");
 
                     b.Property<int>("OtherOffersCount")

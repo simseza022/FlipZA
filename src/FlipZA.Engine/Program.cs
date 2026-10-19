@@ -1,5 +1,6 @@
 using FlipZA.Engine.Configurations;
 using FlipZA.Engine.Jobs;
+using FlipZA.Engine.Services;
 using FlipZA.Infrastructure;
 using FlipZA.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,8 @@ var scraperSettings = builder.Configuration
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.Configure<TakealotScraperSettings>(
     builder.Configuration.GetSection(TakealotScraperSettings.SectionName));
+builder.Services.Configure<DealSettings>(builder.Configuration.GetSection(DealSettings.SectionName));
+builder.Services.AddSingleton<ListingPricer>();
 
 builder.Services.AddQuartz(q =>
 {
