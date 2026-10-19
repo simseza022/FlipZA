@@ -12,7 +12,7 @@ FlipZA is built following **Clean Architecture** principles to keep core busines
 FlipZA/
  ├── src/
  │    ├── FlipZA.Core/            # Pure C# domain entities, interfaces, and margin formulas
- │    ├── FlipZA.Infrastructure/  # EF Core SQLite DbContext, HttpClient wrappers, Playwright scrapers
+ │    ├── FlipZA.Infrastructure/  # EF Core SQLite DbContext, HttpClient scrapers (Playwright fallback planned)
  │    ├── FlipZA.Engine/          # Background Worker Service running Quartz.NET & Telegram alerts
  │    └── FlipZA.Api/             # REST API & Webhook endpoints for user dashboards
  └── tests/
@@ -22,9 +22,9 @@ FlipZA/
 ### 🛠 Tech Stack
 * Framework: .NET 9.0 C#
 
-* Background Worker: .NET Worker Service (BackgroundService) + Quartz.NET
+* Background Worker: .NET Worker Service + Quartz.NET
 
-* Web Scraping & API Parsing: HttpClient + System.Text.Json (Takealot JSON endpoints) & Microsoft.Playwright (Headless Chromium)
+* Web Scraping & API Parsing: HttpClient + System.Text.Json (Takealot JSON endpoints); Microsoft.Playwright (headless Chromium) planned as a fallback
 
 * Database & Persistence: Entity Framework Core 9 + SQLite
 
@@ -45,12 +45,7 @@ cd FlipZA
 dotnet restore
 dotnet build FlipZA.sln
 ```
-3. Install Playwright Browsers (For Infrastructure)
-
-```
-pwsh src/FlipZA.Infrastructure/bin/Debug/net9.0/playwright.ps1 install chromium
-```
-4. Database Setup & Migrations
+3. Database Setup & Migrations
 
 The Engine applies pending migrations to its SQLite database (`flipza.db`) on startup. To manage migrations yourself, use the repo-pinned EF tool:
 
@@ -58,7 +53,7 @@ The Engine applies pending migrations to its SQLite database (`flipza.db`) on st
 dotnet tool restore
 dotnet ef migrations add <Name> --project src/FlipZA.Infrastructure --output-dir Persistence/Migrations
 ```
-5. Run the Engine Locally
+4. Run the Engine Locally
 
 ```
 dotnet run --project src/FlipZA.Engine
@@ -66,7 +61,7 @@ dotnet run --project src/FlipZA.Engine
 
 Search terms, tracked products and request pacing are configured under `TakealotScraper` and `Takealot` in `src/FlipZA.Engine/appsettings.json`.
 
-6. Run the Tests
+5. Run the Tests
 
 ```
 dotnet test

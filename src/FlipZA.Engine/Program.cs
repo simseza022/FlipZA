@@ -35,7 +35,11 @@ var host = builder.Build();
 
 using (var scope = host.Services.CreateScope())
 {
-    await scope.ServiceProvider.GetRequiredService<FlipZaDbContext>().Database.MigrateAsync();
+    var db = scope.ServiceProvider.GetRequiredService<FlipZaDbContext>().Database;
+    await db.MigrateAsync();
+
+    // WAL lets readers (e.g. the API) query while the Engine writes; the setting persists in the file.
+    await db.ExecuteSqlRawAsync("PRAGMA journal_mode=WAL;");
 }
 
 await host.RunAsync();
