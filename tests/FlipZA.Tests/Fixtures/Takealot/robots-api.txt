@@ -1,0 +1,15 @@
+
+User-agent: AdsBot-Google
+
+Allow: /rest/v-*-*-*/sponsored-products/
+
+User-agent: *
+
+Disallow: /rest/v-*-*-*/sponsored-products/
+Disallow: /rest/v-*-*-*/visitors/login*
+Disallow: /rest/v-*-*-*/guests/login*
+Disallow: /rest/v-*-*-*/collect*
+Disallow: /rest/v-*-*-*/order/*/consignment/tracking
+Disallow: /rest/v-*-*-*/popups/*
+
+Allow: /

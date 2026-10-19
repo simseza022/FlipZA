@@ -1,0 +1,65 @@
+using System.Net;
+using FlipZA.Core.Interfaces;
+using FlipZA.Core.Marketplaces;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+
+namespace FlipZA.Infrastructure.Takealot;
+
+/// <summary>
+/// Reads Takealot's public JSON API (the same one its website calls). Robots.txt checks,
+/// throttling and retries are applied by the HttpClient pipeline, not here.
+/// </summary>
+public sealed class TakealotClient(
+    HttpClient httpClient,
+    IOptions<TakealotOptions> options,
+    TimeProvider timeProvider,
+    ILogger<TakealotClient> logger) : IMarketplaceSource
+{
+    private readonly string _apiVersion = options.Value.ApiVersion;
+
+    public Marketplace Marketplace => Marketplace.Takealot;
+
+    public async Task<IReadOnlyList<string>> SearchAsync(string query, int maxPages, CancellationToken cancellationToken)
+    {
+        var ids = new List<string>();
+        string? after = null;
+
+        for (var page = 1; page <= maxPages; page++)
+        {
+            var url = $"rest/{_apiVersion}/searches/products?qsearch={Uri.EscapeDataString(query)}";
+            if (after is not null)
+                url += $"&after={Uri.EscapeDataString(after)}";
+
+            var json = await httpClient.GetStringAsync(url, cancellationToken);
+            var result = TakealotParser.ParseSearch(json);
+            ids.AddRange(result.ProductIds);
+
+            logger.LogDebug("Search '{Query}' page {Page}: {Count} products ({Total} total)",
+                query, page, result.ProductIds.Count, result.TotalFound);
+
+            after = result.NextPageToken;
+            if (after is null || result.ProductIds.Count == 0)
+                break;
+        }
+
+        return ids.Distinct().ToList();
+    }
+
+    public async Task<ScrapedListing?> GetListingAsync(string externalId, CancellationToken cancellationToken)
+    {
+        var plid = externalId.StartsWith("PLID", StringComparison.OrdinalIgnoreCase) ? externalId : $"PLID{externalId}";
+        using var response = await httpClient.GetAsync(
+            $"rest/{_apiVersion}/product-details/{plid}?platform=desktop", cancellationToken);
+
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            logger.LogInformation("Takealot product {Plid} not found", plid);
+            return null;
+        }
+
+        response.EnsureSuccessStatusCode();
+        var json = await response.Content.ReadAsStringAsync(cancellationToken);
+        return TakealotParser.ParseProductDetails(json, timeProvider.GetUtcNow().UtcDateTime);
+    }
+}

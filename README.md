@@ -52,12 +52,22 @@ pwsh src/FlipZA.Infrastructure/bin/Debug/net9.0/playwright.ps1 install chromium
 ```
 4. Database Setup & Migrations
 
+The Engine applies pending migrations to its SQLite database (`flipza.db`) on startup. To manage migrations yourself, use the repo-pinned EF tool:
+
 ```
-# Apply migrations to local SQLite database
-dotnet ef database update --project src/FlipZA.Infrastructure --startup-project src/FlipZA.Engine
+dotnet tool restore
+dotnet ef migrations add <Name> --project src/FlipZA.Infrastructure --output-dir Persistence/Migrations
 ```
 5. Run the Engine Locally
 
 ```
 dotnet run --project src/FlipZA.Engine
+```
+
+Search terms, tracked products and request pacing are configured under `TakealotScraper` and `Takealot` in `src/FlipZA.Engine/appsettings.json`.
+
+6. Run the Tests
+
+```
+dotnet test
 ```

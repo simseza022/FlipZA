@@ -1,0 +1,718 @@
+{
+ "sections": {
+  "products": {
+   "name": "products",
+   "id": "8e5dbd47-ce31-415a-a819-9b1b482800f7",
+   "results": [
+    {
+     "type": "product_views",
+     "product_views": {
+      "badges": {
+       "entries": [
+        {
+         "id": "badge-0",
+         "type": "image",
+         "badge_url_pattern": "https://media.takealot.com/promotions/125414-{view}.png"
+        },
+        {
+         "id": "badge-1",
+         "type": "saving",
+         "value": "26% off"
+        }
+       ],
+       "app_entries": [
+        {
+         "id": "badge-0",
+         "type": "image",
+         "badge_url_pattern": "https://media.takealot.com/promotions/125414-{view}.png"
+        },
+        {
+         "id": "badge-1",
+         "type": "saving",
+         "value": "26% off"
+        }
+       ],
+       "promotion_id": 125414
+      },
+      "core": {
+       "id": 98945485,
+       "title": "Russell Hobbs Digital 9L Air Fryer - RHAF09S",
+       "slug": "russell-hobbs-digital-9l-air-fryer-rhaf09s",
+       "subtitle": "Smart pause function",
+       "brand": "Russell Hobbs",
+       "brand_url": {
+        "link_data": {
+         "path": "/all?filter=Brand:{brand_slug}",
+         "fields": {
+          "brand_slug": "Russell+Hobbs"
+         }
+        }
+       },
+       "star_rating": 4.8,
+       "reviews": 2148,
+       "formats": [],
+       "authors": []
+      },
+      "gallery": {
+       "images": [
+        "https://media.takealot.com/covers_images/5c8058bc304740c2a9cb18919b56228a/s-{size}.file"
+       ],
+       "count": 5,
+       "display_count": "5",
+       "size_guide": null
+      },
+      "promotions_summary": {
+       "is_displayed": false,
+       "label": null,
+       "takealot_more_summary": {
+        "label": "Save with",
+        "is_displayed": {
+         "app": false,
+         "web": false
+        },
+        "image": {
+         "source": "https://static.takealot.com/images/takealotmore/TakealotMORE.png",
+         "alt_text": "TakealotMORE"
+        }
+       }
+      },
+      "variant_summary": {
+       "has_more_colours": false,
+       "applied_selectors": []
+      },
+      "review_summary": {
+       "star_rating": 4.8,
+       "review_count": 2148,
+       "distribution": {
+        "num_1_star_ratings": 45,
+        "num_2_star_ratings": 12,
+        "num_3_star_ratings": 21,
+        "num_4_star_ratings": 156,
+        "num_5_star_ratings": 1914
+       }
+      },
+      "buybox_summary": {
+       "listing_price": 1499,
+       "pretty_price": "R 1,099",
+       "app_pretty_price": "R 1,099",
+       "prices": [
+        1099
+       ],
+       "app_prices": [
+        1099
+       ],
+       "saving": "26%",
+       "app_saving": "26%",
+       "is_add_to_cart_available": true,
+       "is_shop_all_options_available": false,
+       "is_add_to_wish_list_available": true,
+       "product_id": 224000182,
+       "delivery_charges": {},
+       "tsin": 100366962,
+       "is_preorder": false,
+       "add_to_cart_text": "Add to Cart",
+       "promotion_qty": null,
+       "promotion_qty_display_text": null,
+       "shipping_message": {
+        "description": "{0} {1}",
+        "values": [
+         {
+          "value_id": "0",
+          "type": "bold",
+          "value": "FREE NEXT DAY WITH"
+         },
+         {
+          "value_id": "1",
+          "type": "link",
+          "value": "TAKEALOTMORE",
+          "url": "https://www.takealot.com/takealotmore"
+         }
+        ],
+        "code": "takealotmore"
+       }
+      },
+      "stock_availability_summary": {
+       "status": "In stock",
+       "is_leadtime": false,
+       "is_in_stock": true,
+       "is_imported": false,
+       "distribution_centres": [
+        {
+         "id": "distribution-centre-0",
+         "text": "CPT",
+         "info_mode": "short",
+         "description": "This item can be shipped from Cape Town."
+        },
+        {
+         "id": "distribution-centre-1",
+         "text": "DBN",
+         "info_mode": "short",
+         "description": "This item can be shipped from Durban."
+        },
+        {
+         "id": "distribution-centre-2",
+         "text": "JHB",
+         "info_mode": "short",
+         "description": "This item can be shipped from Johannesburg."
+        }
+       ],
+       "estimated_delivery": {
+        "estimated_dates": "Get it Tomorrow, 7am - 7pm",
+        "estimate_delivery_type": "next_day",
+        "estimate_text": {
+         "description": "Get it Tomorrow, 7am - 7pm",
+         "values": []
+        }
+       }
+      },
+      "enhanced_ecommerce_click": {
+       "event": "eec.productClick",
+       "ecommerce": {
+        "click": {
+         "actionField": {
+          "action": "click",
+          "list": "Search Results"
+         },
+         "products": [
+          {
+           "id": "PLID98945485",
+           "name": "Russell Hobbs Digital 9L Air Fryer - RHAF09S",
+           "brand": "Russell Hobbs",
+           "category": "",
+           "variant": null,
+           "dimension1": null,
+           "dimension2": 224000182,
+           "price": 1099,
+           "quantity": 1,
+           "position": 0
+          }
+         ]
+        }
+       }
+      },
+      "enhanced_ecommerce_add_to_cart": {
+       "event": "eec.addToCart",
+       "ecommerce": {
+        "currencyCode": "ZAR",
+        "add": {
+         "products": [
+          {
+           "id": "PLID98945485",
+           "name": "Russell Hobbs Digital 9L Air Fryer - RHAF09S",
+           "brand": "Russell Hobbs",
+           "category": "",
+           "variant": null,
+           "dimension1": null,
+           "dimension2": 224000182,
+           "price": 1099,
+           "quantity": 1,
+           "position": 0
+          }
+         ]
+        }
+       }
+      },
+      "enhanced_ecommerce_impression": {
+       "event": "eec.productImpressions",
+       "ecommerce": {
+        "currencyCode": "ZAR",
+        "impressions": [
+         {
+          "id": "PLID98945485",
+          "name": "Russell Hobbs Digital 9L Air Fryer - RHAF09S",
+          "brand": "Russell Hobbs",
+          "category": "",
+          "variant": null,
+          "dimension1": null,
+          "dimension2": 224000182,
+          "price": 1099,
+          "position": 0,
+          "list": "Search Results"
+         }
+        ]
+       }
+      },
+      "dynamic_pills": [],
+      "selectors": {}
+     }
+    },
+    {
+     "type": "product_views",
+     "product_views": {
+      "badges": {
+       "entries": [
+        {
+         "id": "badge-0",
+         "type": "image",
+         "badge_url_pattern": "https://media.takealot.com/promotions/125414-{view}.png"
+        },
+        {
+         "id": "badge-1",
+         "type": "saving",
+         "value": "65% off"
+        }
+       ],
+       "app_entries": [
+        {
+         "id": "badge-0",
+         "type": "image",
+         "badge_url_pattern": "https://media.takealot.com/promotions/125414-{view}.png"
+        },
+        {
+         "id": "badge-1",
+         "type": "saving",
+         "value": "65% off"
+        }
+       ],
+       "promotion_id": 125414
+      },
+      "core": {
+       "id": 97139455,
+       "title": "Kenwood - 6Litre Basket Air Fryer + Grill with Window - HFG60.000BK",
+       "slug": "kenwood-6litre-basket-air-fryer-grill-with-window-hfg60-000bk",
+       "subtitle": "Kenwood's latest Air Fryer Innovation - Now with Grill feature and Light to Keep an eye on Cookng Progress!",
+       "brand": "Kenwood",
+       "brand_url": {
+        "link_data": {
+         "path": "/all?filter=Brand:{brand_slug}",
+         "fields": {
+          "brand_slug": "Kenwood"
+         }
+        }
+       },
+       "star_rating": 4.9,
+       "reviews": 60,
+       "formats": [],
+       "authors": []
+      },
+      "gallery": {
+       "images": [
+        "https://media.takealot.com/covers_images/9e039cc330af4938bfff9de63b15918a/s-{size}.file"
+       ],
+       "count": 9,
+       "display_count": "9",
+       "size_guide": null
+      },
+      "promotions_summary": {
+       "is_displayed": false,
+       "label": null,
+       "takealot_more_summary": {
+        "label": "Save with",
+        "is_displayed": {
+         "app": false,
+         "web": false
+        },
+        "image": {
+         "source": "https://static.takealot.com/images/takealotmore/TakealotMORE.png",
+         "alt_text": "TakealotMORE"
+        }
+       }
+      },
+      "variant_summary": {
+       "has_more_colours": false,
+       "applied_selectors": []
+      },
+      "review_summary": {
+       "star_rating": 4.9,
+       "review_count": 60,
+       "distribution": {
+        "num_1_star_ratings": 0,
+        "num_2_star_ratings": 0,
+        "num_3_star_ratings": 1,
+        "num_4_star_ratings": 6,
+        "num_5_star_ratings": 53
+       }
+      },
+      "buybox_summary": {
+       "listing_price": 1999,
+       "pretty_price": "R 699",
+       "app_pretty_price": "R 699",
+       "prices": [
+        699
+       ],
+       "app_prices": [
+        699
+       ],
+       "saving": "65%",
+       "app_saving": "65%",
+       "is_add_to_cart_available": true,
+       "is_shop_all_options_available": false,
+       "is_add_to_wish_list_available": true,
+       "product_id": 221032203,
+       "delivery_charges": {},
+       "tsin": 98371671,
+       "is_preorder": false,
+       "add_to_cart_text": "Add to Cart",
+       "promotion_qty": null,
+       "promotion_qty_display_text": null,
+       "shipping_message": {
+        "description": "{0} {1}",
+        "values": [
+         {
+          "value_id": "0",
+          "type": "bold",
+          "value": "FREE NEXT DAY WITH"
+         },
+         {
+          "value_id": "1",
+          "type": "link",
+          "value": "TAKEALOTMORE",
+          "url": "https://www.takealot.com/takealotmore"
+         }
+        ],
+        "code": "takealotmore"
+       }
+      },
+      "stock_availability_summary": {
+       "status": "In stock",
+       "is_leadtime": false,
+       "is_in_stock": true,
+       "is_imported": false,
+       "distribution_centres": [
+        {
+         "id": "distribution-centre-0",
+         "text": "CPT",
+         "info_mode": "short",
+         "description": "This item can be shipped from Cape Town."
+        },
+        {
+         "id": "distribution-centre-1",
+         "text": "JHB",
+         "info_mode": "short",
+         "description": "This item can be shipped from Johannesburg."
+        }
+       ],
+       "estimated_delivery": {
+        "estimated_dates": "Get it Tomorrow, 7am - 7pm",
+        "estimate_delivery_type": "next_day",
+        "estimate_text": {
+         "description": "Get it Tomorrow, 7am - 7pm",
+         "values": []
+        }
+       }
+      },
+      "enhanced_ecommerce_click": {
+       "event": "eec.productClick",
+       "ecommerce": {
+        "click": {
+         "actionField": {
+          "action": "click",
+          "list": "Search Results"
+         },
+         "products": [
+          {
+           "id": "PLID97139455",
+           "name": "Kenwood - 6Litre Basket Air Fryer + Grill with Window - HFG60.000BK",
+           "brand": "Kenwood",
+           "category": "",
+           "variant": null,
+           "dimension1": null,
+           "dimension2": 221032203,
+           "price": 699,
+           "quantity": 1,
+           "position": 1
+          }
+         ]
+        }
+       }
+      },
+      "enhanced_ecommerce_add_to_cart": {
+       "event": "eec.addToCart",
+       "ecommerce": {
+        "currencyCode": "ZAR",
+        "add": {
+         "products": [
+          {
+           "id": "PLID97139455",
+           "name": "Kenwood - 6Litre Basket Air Fryer + Grill with Window - HFG60.000BK",
+           "brand": "Kenwood",
+           "category": "",
+           "variant": null,
+           "dimension1": null,
+           "dimension2": 221032203,
+           "price": 699,
+           "quantity": 1,
+           "position": 1
+          }
+         ]
+        }
+       }
+      },
+      "enhanced_ecommerce_impression": {
+       "event": "eec.productImpressions",
+       "ecommerce": {
+        "currencyCode": "ZAR",
+        "impressions": [
+         {
+          "id": "PLID97139455",
+          "name": "Kenwood - 6Litre Basket Air Fryer + Grill with Window - HFG60.000BK",
+          "brand": "Kenwood",
+          "category": "",
+          "variant": null,
+          "dimension1": null,
+          "dimension2": 221032203,
+          "price": 699,
+          "position": 1,
+          "list": "Search Results"
+         }
+        ]
+       }
+      },
+      "dynamic_pills": [],
+      "selectors": {}
+     }
+    },
+    {
+     "type": "product_views",
+     "product_views": {
+      "badges": {
+       "entries": [
+        {
+         "id": "badge-0",
+         "type": "saving",
+         "value": "22% off"
+        }
+       ],
+       "app_entries": [
+        {
+         "id": "badge-0",
+         "type": "saving",
+         "value": "22% off"
+        }
+       ],
+       "promotion_id": null
+      },
+      "core": {
+       "id": 96021549,
+       "title": "HiMost Air Fryer-6L",
+       "slug": "himost-air-fryer-6l",
+       "subtitle": null,
+       "brand": "HiMost",
+       "brand_url": {
+        "link_data": {
+         "path": "/all?filter=Brand:{brand_slug}",
+         "fields": {
+          "brand_slug": "HiMost"
+         }
+        }
+       },
+       "star_rating": 4.5,
+       "reviews": 298,
+       "formats": [],
+       "authors": []
+      },
+      "gallery": {
+       "images": [
+        "https://media.takealot.com/covers_images/06dac976e9bf478a82a462397e9aa84a/s-{size}.file"
+       ],
+       "count": 6,
+       "display_count": "6",
+       "size_guide": null
+      },
+      "promotions_summary": {
+       "is_displayed": false,
+       "label": null,
+       "takealot_more_summary": {
+        "label": "Save with",
+        "is_displayed": {
+         "app": false,
+         "web": false
+        },
+        "image": {
+         "source": "https://static.takealot.com/images/takealotmore/TakealotMORE.png",
+         "alt_text": "TakealotMORE"
+        }
+       }
+      },
+      "variant_summary": {
+       "has_more_colours": false,
+       "applied_selectors": []
+      },
+      "review_summary": {
+       "star_rating": 4.5,
+       "review_count": 298,
+       "distribution": {
+        "num_1_star_ratings": 20,
+        "num_2_star_ratings": 9,
+        "num_3_star_ratings": 12,
+        "num_4_star_ratings": 31,
+        "num_5_star_ratings": 226
+       }
+      },
+      "buybox_summary": {
+       "listing_price": 570,
+       "pretty_price": "R 439",
+       "app_pretty_price": "R 439",
+       "prices": [
+        439
+       ],
+       "app_prices": [
+        439
+       ],
+       "saving": "22%",
+       "app_saving": "22%",
+       "is_add_to_cart_available": true,
+       "is_shop_all_options_available": false,
+       "is_add_to_wish_list_available": true,
+       "product_id": 224721636,
+       "delivery_charges": {},
+       "tsin": 97074052,
+       "is_preorder": false,
+       "add_to_cart_text": "Add to Cart",
+       "promotion_qty": null,
+       "promotion_qty_display_text": null,
+       "shipping_message": {
+        "description": "{0} {1}",
+        "values": [
+         {
+          "value_id": "0",
+          "type": "bold",
+          "value": "FREE NEXT DAY WITH"
+         },
+         {
+          "value_id": "1",
+          "type": "link",
+          "value": "TAKEALOTMORE",
+          "url": "https://www.takealot.com/takealotmore"
+         }
+        ],
+        "code": "takealotmore"
+       }
+      },
+      "stock_availability_summary": {
+       "status": "In stock",
+       "is_leadtime": false,
+       "is_in_stock": true,
+       "is_imported": false,
+       "distribution_centres": [
+        {
+         "id": "distribution-centre-0",
+         "text": "CPT",
+         "info_mode": "short",
+         "description": "This item can be shipped from Cape Town."
+        },
+        {
+         "id": "distribution-centre-1",
+         "text": "JHB",
+         "info_mode": "short",
+         "description": "This item can be shipped from Johannesburg."
+        }
+       ],
+       "estimated_delivery": {
+        "estimated_dates": "Get it Tomorrow, 7am - 7pm",
+        "estimate_delivery_type": "next_day",
+        "estimate_text": {
+         "description": "Get it Tomorrow, 7am - 7pm",
+         "values": []
+        }
+       }
+      },
+      "enhanced_ecommerce_click": {
+       "event": "eec.productClick",
+       "ecommerce": {
+        "click": {
+         "actionField": {
+          "action": "click",
+          "list": "Search Results"
+         },
+         "products": [
+          {
+           "id": "PLID96021549",
+           "name": "HiMost Air Fryer-6L",
+           "brand": "HiMost",
+           "category": "",
+           "variant": null,
+           "dimension1": null,
+           "dimension2": 224721636,
+           "price": 439,
+           "quantity": 1,
+           "position": 2
+          }
+         ]
+        }
+       }
+      },
+      "enhanced_ecommerce_add_to_cart": {
+       "event": "eec.addToCart",
+       "ecommerce": {
+        "currencyCode": "ZAR",
+        "add": {
+         "products": [
+          {
+           "id": "PLID96021549",
+           "name": "HiMost Air Fryer-6L",
+           "brand": "HiMost",
+           "category": "",
+           "variant": null,
+           "dimension1": null,
+           "dimension2": 224721636,
+           "price": 439,
+           "quantity": 1,
+           "position": 2
+          }
+         ]
+        }
+       }
+      },
+      "enhanced_ecommerce_impression": {
+       "event": "eec.productImpressions",
+       "ecommerce": {
+        "currencyCode": "ZAR",
+        "impressions": [
+         {
+          "id": "PLID96021549",
+          "name": "HiMost Air Fryer-6L",
+          "brand": "HiMost",
+          "category": "",
+          "variant": null,
+          "dimension1": null,
+          "dimension2": 224721636,
+          "price": 439,
+          "position": 2,
+          "list": "Search Results"
+         }
+        ]
+       }
+      },
+      "dynamic_pills": [],
+      "selectors": {}
+     }
+    }
+   ],
+   "paging": {
+    "next_is_after": "WzE3LjI0NDI1MywxMDEwNDcxODNd",
+    "previous_is_before": "",
+    "num_found_text": "823 results for \"air fryer\"",
+    "total_num_found": 823,
+    "is_approximate": false
+   },
+   "is_paged": true,
+   "search_request_id": "b5f68a14bcb04956bf26dd1ceb7ee488"
+  }
+ },
+ "section_keys": [
+  "products"
+ ],
+ "search_request": {
+  "estimated_delivery_from_date": null,
+  "context": "search",
+  "document_collections": [
+   "products"
+  ],
+  "filters": {},
+  "qsearch": "air fryer",
+  "rows": 36,
+  "custom": null,
+  "before": null,
+  "after": null,
+  "start": null,
+  "category_slug": null,
+  "department_slug": null,
+  "sort": "Relevance",
+  "experiment": null,
+  "customer_id": null,
+  "client_id": null,
+  "customer_location_id": null
+ },
+ "attribution_token": null
+}
