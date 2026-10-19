@@ -36,6 +36,9 @@ public class MarketplaceProduct
     /// <summary>All remaining product attributes, keyed by the marketplace's attribute type.</summary>
     public Dictionary<string, string> Attributes { get; set; } = new();
 
+    /// <summary>Tracked products are re-scraped on every refresh run to build price history.</summary>
+    public bool IsTracked { get; set; }
+
     public DateTime FirstSeenAtUtc { get; set; }
     public DateTime LastSeenAtUtc { get; set; }
 

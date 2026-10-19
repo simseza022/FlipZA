@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\FlipZA.Infrastructure\FlipZA.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\FlipZA.Engine\FlipZA.Engine.csproj" />
   </ItemGroup>
 
 </Project>

@@ -171,6 +171,9 @@ namespace FlipZA.Infrastructure.Persistence.Migrations
                     b.Property<string>("ImageUrl")
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("IsTracked")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("LastRawPayload")
                         .HasColumnType("TEXT");
 
@@ -216,6 +219,8 @@ namespace FlipZA.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("Marketplace", "ExternalId")
                         .IsUnique();
+
+                    b.HasIndex("Marketplace", "IsTracked", "LastSeenAtUtc");
 
                     b.ToTable("MarketplaceProducts");
                 });

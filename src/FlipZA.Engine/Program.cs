@@ -7,9 +7,9 @@ using Quartz;
 
 var builder = Host.CreateApplicationBuilder(args);
 
-var engineSettings = builder.Configuration
-    .GetSection(EngineSettings.SectionName)
-    .Get<EngineSettings>() ?? new EngineSettings();
+var scraperSettings = builder.Configuration
+    .GetSection(TakealotScraperSettings.SectionName)
+    .Get<TakealotScraperSettings>() ?? new TakealotScraperSettings();
 
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.Configure<TakealotScraperSettings>(
@@ -17,15 +17,25 @@ builder.Services.Configure<TakealotScraperSettings>(
 
 builder.Services.AddQuartz(q =>
 {
-    var takealotJobKey = new JobKey(nameof(TakealotScraperJob));
-
-    q.AddJob<TakealotScraperJob>(opts => opts.WithIdentity(takealotJobKey));
+    var discoveryKey = new JobKey(nameof(TakealotDiscoveryJob));
+    q.AddJob<TakealotDiscoveryJob>(opts => opts.WithIdentity(discoveryKey));
     q.AddTrigger(opts => opts
-        .ForJob(takealotJobKey)
-        .WithIdentity($"{nameof(TakealotScraperJob)}-trigger")
+        .ForJob(discoveryKey)
+        .WithIdentity($"{nameof(TakealotDiscoveryJob)}-trigger")
         .StartNow()
         .WithSimpleSchedule(s => s
-            .WithIntervalInMinutes(engineSettings.ScrapeIntervalMinutes)
+            .WithIntervalInHours(scraperSettings.Discovery.IntervalHours)
+            .RepeatForever()));
+
+    // Starts after discovery has had time to pick the first tracked set.
+    var refreshKey = new JobKey(nameof(TakealotRefreshJob));
+    q.AddJob<TakealotRefreshJob>(opts => opts.WithIdentity(refreshKey));
+    q.AddTrigger(opts => opts
+        .ForJob(refreshKey)
+        .WithIdentity($"{nameof(TakealotRefreshJob)}-trigger")
+        .StartAt(DateBuilder.FutureDate(scraperSettings.Refresh.InitialDelayMinutes, IntervalUnit.Minute))
+        .WithSimpleSchedule(s => s
+            .WithIntervalInHours(scraperSettings.Refresh.IntervalHours)
             .RepeatForever()));
 });
 

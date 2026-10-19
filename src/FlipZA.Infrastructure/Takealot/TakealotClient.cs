@@ -20,30 +20,33 @@ public sealed class TakealotClient(
 
     public Marketplace Marketplace => Marketplace.Takealot;
 
-    public async Task<IReadOnlyList<string>> SearchAsync(string query, int maxPages, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<MarketplaceSearchHit>> SearchAsync(
+        MarketplaceSearch search, int maxPages, CancellationToken cancellationToken)
     {
-        var ids = new List<string>();
+        var hits = new List<MarketplaceSearchHit>();
         string? after = null;
 
         for (var page = 1; page <= maxPages; page++)
         {
-            var url = $"rest/{_apiVersion}/searches/products?qsearch={Uri.EscapeDataString(query)}";
+            var url = $"rest/{_apiVersion}/searches/products?qsearch={Uri.EscapeDataString(search.Query)}";
+            if (search.DepartmentId is { } department)
+                url += $"&filter=Type:{department}";
             if (after is not null)
                 url += $"&after={Uri.EscapeDataString(after)}";
 
             var json = await httpClient.GetStringAsync(url, cancellationToken);
             var result = TakealotParser.ParseSearch(json);
-            ids.AddRange(result.ProductIds);
+            hits.AddRange(result.Hits);
 
-            logger.LogDebug("Search '{Query}' page {Page}: {Count} products ({Total} total)",
-                query, page, result.ProductIds.Count, result.TotalFound);
+            logger.LogDebug("Search '{Query}' (department {Department}) page {Page}: {Count} products ({Total} total)",
+                search.Query, search.DepartmentId, page, result.Hits.Count, result.TotalFound);
 
             after = result.NextPageToken;
-            if (after is null || result.ProductIds.Count == 0)
+            if (after is null || result.Hits.Count == 0)
                 break;
         }
 
-        return ids.Distinct().ToList();
+        return hits.DistinctBy(h => h.ExternalId).ToList();
     }
 
     public async Task<ScrapedListing?> GetListingAsync(string externalId, CancellationToken cancellationToken)

@@ -1,3 +1,4 @@
+using FlipZA.Core.Marketplaces;
 using FlipZA.Infrastructure.Persistence;
 using FlipZA.Infrastructure.Takealot;
 using Microsoft.Data.Sqlite;
@@ -46,6 +47,80 @@ public sealed class ListingRepositoryTests : IDisposable
 
         var cheapCount = await verify.ListingSnapshots.CountAsync(s => s.Price < 1000m);
         Assert.Equal(1, cheapCount);
+    }
+
+    [Fact]
+    public async Task SetTrackedAsync_TracksKnownProducts_ReturnsUnknown_AndPrunesOthers()
+    {
+        await SaveFixtureAsync("product-details-retail.json", track: true);        // PLID98945485
+        await SaveFixtureAsync("product-details-marketplace.json", track: false);  // PLID96021549
+
+        await using (var db = new FlipZaDbContext(_options))
+        {
+            var unknown = await new ListingRepository(db).SetTrackedAsync(
+                Marketplace.Takealot, ["PLID96021549", "PLID11111111"], untrackOthers: true, CancellationToken.None);
+
+            Assert.Equal(["PLID11111111"], unknown);
+        }
+
+        await using var verify = new FlipZaDbContext(_options);
+        var tracked = await new ListingRepository(verify).GetTrackedAsync(Marketplace.Takealot, 10, CancellationToken.None);
+        Assert.Equal(["PLID96021549"], tracked);
+    }
+
+    [Fact]
+    public async Task SetTrackedAsync_WithoutPruning_KeepsExistingTrackedProducts()
+    {
+        await SaveFixtureAsync("product-details-retail.json", track: true);
+        await SaveFixtureAsync("product-details-marketplace.json", track: false);
+
+        await using (var db = new FlipZaDbContext(_options))
+            await new ListingRepository(db).SetTrackedAsync(
+                Marketplace.Takealot, ["PLID96021549"], untrackOthers: false, CancellationToken.None);
+
+        await using var verify = new FlipZaDbContext(_options);
+        var tracked = await new ListingRepository(verify).GetTrackedAsync(Marketplace.Takealot, 10, CancellationToken.None);
+        Assert.Equal(2, tracked.Count);
+    }
+
+    [Fact]
+    public async Task SaveAsync_RefreshOfTrackedProduct_StaysTracked_AndUntrackAsyncStopsIt()
+    {
+        await SaveFixtureAsync("product-details-retail.json", track: true);
+        await SaveFixtureAsync("product-details-retail.json", track: false); // a refresh doesn't set the flag
+
+        await using (var db = new FlipZaDbContext(_options))
+        {
+            var repository = new ListingRepository(db);
+            Assert.Equal(["PLID98945485"], await repository.GetTrackedAsync(Marketplace.Takealot, 10, CancellationToken.None));
+
+            await repository.UntrackAsync(Marketplace.Takealot, "PLID98945485", CancellationToken.None);
+        }
+
+        await using var verify = new FlipZaDbContext(_options);
+        Assert.Empty(await new ListingRepository(verify).GetTrackedAsync(Marketplace.Takealot, 10, CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task GetTrackedAsync_ReturnsStalestFirst_UpToLimit()
+    {
+        await SaveFixtureAsync("product-details-retail.json", track: true, capturedAt: new DateTime(2026, 10, 19, 10, 0, 0, DateTimeKind.Utc));
+        await SaveFixtureAsync("product-details-marketplace.json", track: true, capturedAt: new DateTime(2026, 10, 19, 9, 0, 0, DateTimeKind.Utc));
+
+        await using var db = new FlipZaDbContext(_options);
+        var tracked = await new ListingRepository(db).GetTrackedAsync(Marketplace.Takealot, 1, CancellationToken.None);
+
+        Assert.Equal(["PLID96021549"], tracked);
+    }
+
+    private async Task SaveFixtureAsync(string fixture, bool track, DateTime? capturedAt = null)
+    {
+        var listing = TakealotParser.ParseProductDetails(
+            Fixture.Read("Takealot", fixture), capturedAt ?? DateTime.UtcNow);
+        listing.Product.IsTracked = track;
+
+        await using var db = new FlipZaDbContext(_options);
+        await new ListingRepository(db).SaveAsync(listing, CancellationToken.None);
     }
 
     public void Dispose() => _connection.Dispose();

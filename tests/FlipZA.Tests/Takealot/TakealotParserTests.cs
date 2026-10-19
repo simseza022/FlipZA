@@ -8,14 +8,22 @@ public class TakealotParserTests
     private static readonly DateTime CapturedAt = new(2026, 10, 19, 12, 0, 0, DateTimeKind.Utc);
 
     [Fact]
-    public void ParseSearch_ReturnsPlidsAndNextPageToken()
+    public void ParseSearch_ReturnsHitsAndNextPageToken()
     {
         var page = TakealotParser.ParseSearch(Fixture.Read("Takealot", "search.json"));
 
-        Assert.Equal(3, page.ProductIds.Count);
-        Assert.All(page.ProductIds, id => Assert.StartsWith("PLID", id));
+        Assert.Equal(3, page.Hits.Count);
+        Assert.All(page.Hits, h => Assert.StartsWith("PLID", h.ExternalId));
         Assert.NotNull(page.NextPageToken);
-        Assert.True(page.TotalFound > page.ProductIds.Count);
+        Assert.True(page.TotalFound > page.Hits.Count);
+
+        var first = page.Hits[0];
+        Assert.Equal("PLID98945485", first.ExternalId);
+        Assert.Equal("Russell Hobbs Digital 9L Air Fryer - RHAF09S", first.Title);
+        Assert.Equal(1099m, first.Price);
+        Assert.Equal(2148, first.ReviewCount);
+        Assert.Equal(4.8m, first.StarRating);
+        Assert.True(first.IsInStock);
     }
 
     [Fact]

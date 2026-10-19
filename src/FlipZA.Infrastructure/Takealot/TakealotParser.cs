@@ -5,7 +5,7 @@ using FlipZA.Infrastructure.Json;
 
 namespace FlipZA.Infrastructure.Takealot;
 
-public sealed record TakealotSearchPage(IReadOnlyList<string> ProductIds, string? NextPageToken, int TotalFound);
+public sealed record TakealotSearchPage(IReadOnlyList<MarketplaceSearchHit> Hits, string? NextPageToken, int TotalFound);
 
 /// <summary>
 /// Maps Takealot's public REST API responses onto FlipZA's marketplace entities.
@@ -20,17 +20,34 @@ public static partial class TakealotParser
         using var doc = JsonDocument.Parse(json);
         var products = doc.RootElement.Prop("sections", "products");
 
-        var ids = products.Prop("results").Items()
-            .Select(r => r.Prop("product_views", "core", "id").AsString())
-            .Where(id => id is not null)
-            .Select(id => $"PLID{id}")
-            .Distinct()
+        var hits = products.Prop("results").Items()
+            .Select(r => ParseSearchHit(r.Prop("product_views")))
+            .OfType<MarketplaceSearchHit>()
+            .DistinctBy(h => h.ExternalId)
             .ToList();
 
         var next = products.Prop("paging", "next_is_after").AsString();
-        var total = products.Prop("paging", "total_num_found").AsInt() ?? ids.Count;
+        var total = products.Prop("paging", "total_num_found").AsInt() ?? hits.Count;
 
-        return new TakealotSearchPage(ids, string.IsNullOrEmpty(next) ? null : next, total);
+        return new TakealotSearchPage(hits, string.IsNullOrEmpty(next) ? null : next, total);
+    }
+
+    private static MarketplaceSearchHit? ParseSearchHit(JsonElement? view)
+    {
+        var id = view.Prop("core", "id").AsString();
+        if (id is null)
+            return null;
+
+        return new MarketplaceSearchHit(
+            ExternalId: $"PLID{id}",
+            Title: view.Prop("core", "title").AsString() ?? string.Empty,
+            Price: view.Prop("buybox_summary", "prices").Items()
+                .Select(p => ((JsonElement?)p).AsDecimal())
+                .FirstOrDefault(),
+            ReviewCount: view.Prop("core", "reviews").AsInt()
+                         ?? view.Prop("review_summary", "review_count").AsInt() ?? 0,
+            StarRating: view.Prop("core", "star_rating").AsDecimal(),
+            IsInStock: view.Prop("stock_availability_summary", "is_in_stock").AsBool() ?? false);
     }
 
     public static ScrapedListing ParseProductDetails(string json, DateTime capturedAtUtc)
