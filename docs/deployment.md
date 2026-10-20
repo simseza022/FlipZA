@@ -56,10 +56,10 @@ If the repository is private, clone with a read-only **deploy key** (GitHub → 
 
 ```text
 Loaded robots.txt for https://api.takealot.com
-Search 'power bank' returned 72 products
+Search 'power bank' (Local) returned 72 products, 30 candidates
 ...
-Takealot discovery complete: 1440 search hits, 150 tracked (150 new, 150 saved, 0 failed), 0 failed searches
-Takealot refresh complete: 150/150 saved, 0 delisted, 0 failed. Next run at: ...
+Takealot discovery complete: 3528 search hits, 245 tracked (... import, ... local, 0 manual; ... new, ... saved, 0 failed), 0 failed searches
+Takealot refresh complete: 245/245 saved, 0 delisted, 0 failed. Next run at: ...
 ```
 
 ## Updating

@@ -39,25 +39,31 @@ Most settings are read when the Engine starts, so **restart after changing them*
 | Key | Default | Description |
 |---|---|---|
 | `IntervalHours` | `12` | How often discovery runs (first run at startup) |
-| `Searches` | 18 import + 10 local searches | List of `{ "Query": "...", "Department": id, "Channel": "Import" \| "Local" }`. `Department` is optional; `Channel` defaults to `Local`. |
+| `Searches` | 18 electronics import + 21 fashion import + 10 local searches | List of `{ "Query": "...", "Department": id, "Channel": "Import" \| "Local", "Profile": "Electronics" \| "Fashion" }`. `Department` is optional; `Channel` defaults to `Local`; `Profile` (Import only) defaults to `Electronics`. |
 | `MaxPagesPerSearch` | `2` | Result pages per search (36 products each) |
 | `MinPrice` / `MaxPrice` | `200` / `3000` | Rand price band for candidates |
 | `MinReviewCount` | `20` | Minimum reviews (sales-velocity proxy) |
 | `RequireInStock` | `true` | Skip out-of-stock products |
-| `MaxTrackedProducts` | `150` | Size of the tracked set (excluding `ProductIds`) |
+| `MaxTrackedProducts` | `245` | Size of the tracked set (excluding `ProductIds`) |
 
 See [Takealot scraper](scraper.md#discovery-job-choosing-what-to-track) for how these are applied and for department ids.
 
-## `TakealotScraper:Discovery:Import`: filters for Import-channel searches
+## `TakealotScraper:Discovery:ImportProfiles`: filters for Import-channel searches
 
-| Key | Default | Description |
+A dictionary of named profiles; each Import search picks one with `Profile`. Names are case-insensitive. Two are configured: `Electronics` and `Fashion`. Every profile has these keys:
+
+| Key | Default (`Electronics` profile) | Description |
 |---|---|---|
 | `GenericBrandNames` | `Generic`, `Unbranded`, `No Brand`, `Non-Branded`, `OEM`, `No result` | Brand values treated as "no brand" (case-insensitive) |
 | `ExcludedBrands` | 44 established brands (Apple, Samsung, Belkin, Anker, UGreen, Volkano, SanDisk, Edifier, ...) | Skipped because overseas stock of these risks being counterfeit |
 | `UnbrandedOnly` | `false` | `true` also skips small private labels, keeping only products with no brand |
 | `ExcludedTitleKeywords` | `bluetooth`, `wireless`, `wifi`, `wi-fi`, `smart`, `rechargeable`, `battery`, `mah`, `power bank`, `powerbank`, `wall charger`, `car charger`, `charger plug`, `solar` | Whole-word, case-insensitive title matches that signal radio, battery or mains-charger products |
 
-Default lists are defined in `appsettings.json`, not in code: .NET's configuration binder adds configured items to pre-filled lists instead of replacing them. To change a list with environment variables, set each index (`TakealotScraper__Discovery__Import__ExcludedBrands__0`, `__1`, ...), or edit `appsettings.json`.
+The `Fashion` profile excludes about 50 fashion, luggage and watch brands (Gucci, Michael Kors, Guess, Polo, Samsonite, Casio, Ray-Ban, ...) and the title keywords `replica`, `inspired`, `dupe`, `1:1`, `smart` and `bluetooth`.
+
+To add a profile (e.g. `Home`), add an entry under `ImportProfiles` and set `"Profile": "Home"` on its searches. A test (`EngineConfigurationTests`) fails if any Import search names a profile that doesn't exist.
+
+Default lists are defined in `appsettings.json`, not in code: .NET's configuration binder adds configured items to pre-filled lists instead of replacing them. To change a list with environment variables, set each index (`TakealotScraper__Discovery__ImportProfiles__Fashion__ExcludedBrands__0`, `__1`, ...), or edit `appsettings.json`.
 
 ## `TakealotScraper:Refresh`: price history
 
@@ -65,7 +71,7 @@ Default lists are defined in `appsettings.json`, not in code: .NET's configurati
 |---|---|---|
 | `IntervalHours` | `12` | How often each tracked product is re-checked |
 | `InitialDelayMinutes` | `30` | Delay before the first refresh after startup, so it follows discovery |
-| `MaxProductsPerRun` | `150` | Cap on products refreshed per run (stalest first) |
+| `MaxProductsPerRun` | `245` | Cap on products refreshed per run (stalest first) |
 
 ## `TakealotScraper:ProductIds`
 
@@ -114,7 +120,7 @@ A rough request budget per day:
 discovery: (searches × MaxPagesPerSearch + newly tracked products) × (24 ÷ Discovery.IntervalHours)
 refresh:   MaxProductsPerRun × (24 ÷ Refresh.IntervalHours)
 
-defaults:  (28 × 2 + ~10) × 2  +  150 × 2  ≈  450 requests/day
+defaults:  (49 × 2 + ~10) × 2  +  245 × 2  ≈  700 requests/day
 ```
 
-Each run's duration is roughly `requests × MinRequestIntervalMs`; a 150-product refresh takes about 6–7 minutes.
+Each run's duration is roughly `requests × MinRequestIntervalMs`; a 245-product refresh takes about 10–11 minutes.

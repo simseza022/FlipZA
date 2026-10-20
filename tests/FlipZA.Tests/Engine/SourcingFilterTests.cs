@@ -48,6 +48,29 @@ public class SourcingFilterTests
     public void SimilarLookingTitles_AreNotExcluded(string title) =>
         Assert.True(SourcingFilter.IsImportFriendly(Hit(title, null), Settings));
 
+    private static readonly TakealotScraperSettings.ImportFilterSettings Fashion = new()
+    {
+        GenericBrandNames = ["Generic"],
+        ExcludedBrands = ["Guess", "Michael Kors"],
+        ExcludedTitleKeywords = ["replica", "inspired", "dupe", "1:1", "smart"]
+    };
+
+    [Theory]
+    [InlineData("Women's Designer Crossbody Bag - Black", null)]
+    [InlineData("Men's Automatic Ratchet Belt - Genuine Leather", "IPSTYLE")]
+    [InlineData("Men's Gift Set - Wallet, Belt & Notebook in Gift Box", null)]
+    public void Fashion_GenericAndPrivateLabel_AreImportFriendly(string title, string? brand) =>
+        Assert.True(SourcingFilter.IsImportFriendly(Hit(title, brand), Fashion));
+
+    [Theory]
+    [InlineData("Ladies Tote Bag", "Guess")]
+    [InlineData("Ladies Tote Bag", "michael kors")]
+    [InlineData("LV Inspired Monogram Tote Bag", null)]
+    [InlineData("Replica Designer Wallet", null)]
+    [InlineData("Men's Smart Watch Fitness Tracker", null)]
+    public void Fashion_BrandsCounterfeitSignalsAndSmartwatches_AreExcluded(string title, string? brand) =>
+        Assert.False(SourcingFilter.IsImportFriendly(Hit(title, brand), Fashion));
+
     [Fact]
     public void UnbrandedOnly_RejectsPrivateLabels()
     {

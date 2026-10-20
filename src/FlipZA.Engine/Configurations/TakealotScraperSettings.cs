@@ -35,8 +35,11 @@ public class TakealotScraperSettings
         /// <summary>Upper bound on tracked products; keep it refreshable within one refresh interval.</summary>
         public int MaxTrackedProducts { get; set; } = 150;
 
-        /// <summary>Extra filters for searches in the <see cref="SourcingChannel.Import"/> channel.</summary>
-        public ImportFilterSettings Import { get; set; } = new();
+        /// <summary>
+        /// Named filter sets for searches in the <see cref="SourcingChannel.Import"/> channel, e.g.
+        /// "Electronics" and "Fashion"; each import search picks one with <see cref="SearchSettings.Profile"/>.
+        /// </summary>
+        public Dictionary<string, ImportFilterSettings> ImportProfiles { get; set; } = new(StringComparer.OrdinalIgnoreCase);
     }
 
     public class SearchSettings
@@ -48,6 +51,9 @@ public class TakealotScraperSettings
 
         /// <summary>Import: generic, simple-to-import products only. Local: any brand (SA wholesale stock).</summary>
         public SourcingChannel Channel { get; set; } = SourcingChannel.Local;
+
+        /// <summary>Which entry of <see cref="DiscoverySettings.ImportProfiles"/> filters an Import search.</summary>
+        public string Profile { get; set; } = "Electronics";
     }
 
     // Lists are empty here on purpose: the configuration binder appends to (rather than replaces)
@@ -64,8 +70,9 @@ public class TakealotScraperSettings
         public bool UnbrandedOnly { get; set; }
 
         /// <summary>
-        /// Title words that signal costly imports: radio (ICASA approval), lithium batteries
-        /// (dangerous goods freight) or mains chargers (NRCS approval).
+        /// Title words that rule a product out, e.g. for electronics radio (ICASA approval), lithium
+        /// batteries (dangerous goods freight) or mains chargers (NRCS approval); for fashion,
+        /// counterfeit signals such as "replica" or "inspired".
         /// </summary>
         public List<string> ExcludedTitleKeywords { get; set; } = new();
     }

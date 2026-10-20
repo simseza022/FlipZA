@@ -48,6 +48,16 @@ public class TakealotDiscoveryJob : IJob
         var failedSearches = 0;
         foreach (var search in discovery.Searches)
         {
+            TakealotScraperSettings.ImportFilterSettings? importFilters = null;
+            if (search.Channel == SourcingChannel.Import
+                && !discovery.ImportProfiles.TryGetValue(search.Profile, out importFilters))
+            {
+                failedSearches++;
+                _logger.LogError("Search '{Query}' uses import profile '{Profile}', which is not configured; skipping it",
+                    search.Query, search.Profile);
+                continue;
+            }
+
             try
             {
                 var found = await _takealot.SearchAsync(
@@ -55,7 +65,7 @@ public class TakealotDiscoveryJob : IJob
                 hitCount += found.Count;
 
                 var candidates = found
-                    .Where(h => IsCandidate(h, search.Channel))
+                    .Where(h => IsCandidate(h, importFilters))
                     .OrderByDescending(h => h.ReviewCount)
                     .ToList();
                 candidatesPerSearch.Add(candidates);
@@ -115,13 +125,14 @@ public class TakealotDiscoveryJob : IJob
             untrackOthers ? string.Empty : "; skipped pruning untracked products");
     }
 
-    private bool IsCandidate(MarketplaceSearchHit hit, SourcingChannel channel)
+    /// <param name="importFilters">The search's import profile; null for searches outside the Import channel.</param>
+    private bool IsCandidate(MarketplaceSearchHit hit, TakealotScraperSettings.ImportFilterSettings? importFilters)
     {
         var discovery = _settings.Discovery;
         return hit.Price is { } price && price >= discovery.MinPrice && price <= discovery.MaxPrice
                && hit.ReviewCount >= discovery.MinReviewCount
                && (hit.IsInStock || !discovery.RequireInStock)
-               && (channel != SourcingChannel.Import || SourcingFilter.IsImportFriendly(hit, discovery.Import));
+               && (importFilters is null || SourcingFilter.IsImportFriendly(hit, importFilters));
     }
 
     /// <summary>

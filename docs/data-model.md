@@ -94,7 +94,7 @@ Index: `(ProductId, CapturedAtUtc)`.
 
 ## Growth
 
-At 150 tracked products checked twice a day, the database grows by about 300 snapshots a day plus their competing offers, roughly **10–30 MB per month**. `LastRawPayload` is overwritten rather than accumulated.
+At 245 tracked products checked twice a day, the database grows by about 490 snapshots a day plus their competing offers, roughly **15–50 MB per month**. `LastRawPayload` is overwritten rather than accumulated.
 
 ---
 

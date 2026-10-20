@@ -14,7 +14,7 @@ It tracks two kinds of opportunity:
 | Area | Status |
 |---|---|
 | Takealot scraper (search + product details via Takealot's public JSON API) | Working |
-| Discovery of fast-moving light gadgets (28 searches across Import and Local channels) | Working |
+| Discovery of fast-moving products: gadgets, bags, wallets, belts, watches, gift sets (49 searches) | Working |
 | Price, stock and competition history (SQLite) | Working |
 | Deal calculator (fees, VAT, landed cost, ROI, max buy price) | Working |
 | robots.txt enforcement, throttling, retries | Working |
@@ -28,15 +28,15 @@ It tracks two kinds of opportunity:
 
 ```mermaid
 flowchart LR
-    D[Discovery job<br/>every 12 h] -->|28 import + local searches| T[(Takealot API)]
-    D -->|picks 150 tracked products| DB[(SQLite)]
+    D[Discovery job<br/>every 12 h] -->|49 import + local searches| T[(Takealot API)]
+    D -->|picks 245 tracked products| DB[(SQLite)]
     R[Refresh job<br/>every 12 h, +30 min] -->|product details per tracked product| T
     R --> P[Deal calculator]
     D --> P
     P -->|snapshot + net proceeds + max buy price| DB
 ```
 
-1. **Discovery** searches Takealot for light gadgets and accessories, keeps in-stock products priced R200–R3,000 with at least 20 reviews, drops established brands and hard-to-import products from the **Import** searches, and picks the 150 most-reviewed as the **tracked set**. Review count is the best public signal of how fast a product sells.
+1. **Discovery** searches Takealot for light gadgets and accessories, and for fashion accessories and gift sets (bags, backpacks, purses, wallets, belts, watches, sunglasses, gift boxes). It keeps in-stock products priced R200–R3,000 with at least 20 reviews, drops established brands, counterfeit signals and hard-to-import products from the **Import** searches, and picks the 245 most-reviewed as the **tracked set**. Review count is the best public signal of how fast a product sells.
 2. **Refresh** re-reads every tracked product twice a day and stores a **snapshot**: price, stock, buy-box seller, competing offers, reviews.
 3. Every snapshot is run through the **deal calculator**, which stores what a reseller would keep from a sale and the **maximum supplier price** that still clears the deal gate (R80 profit and 25% ROI).
 
@@ -87,4 +87,4 @@ FlipZA/
 
 ## Responsible scraping
 
-FlipZA identifies itself with an honest User-Agent, obeys Takealot's `robots.txt`, spaces requests at least 2.5 seconds apart and makes roughly 450 requests a day. Takealot's Terms of Use have **not yet been reviewed**; do that before relying on this commercially.
+FlipZA identifies itself with an honest User-Agent, obeys Takealot's `robots.txt`, spaces requests at least 2.5 seconds apart and makes roughly 700 requests a day. Takealot's Terms of Use have **not yet been reviewed**; do that before relying on this commercially.
